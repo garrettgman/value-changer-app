@@ -13,7 +13,12 @@ def parsed_data():
     file: list[FileInfo] | None = input.file()
     if file is None:
         return pd.DataFrame()
-    return pd.read_csv(file[0]["datapath"])
+    df = pd.read_csv(
+        file[0]["datapath"], 
+        keep_default_na=False, 
+        na_values=[]
+    )
+    return df
 
 # Filter to rows of interest
 ui.input_text("value", "Missing value symbol", value="NaN")
