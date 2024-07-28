@@ -8,8 +8,6 @@ from shiny.types import FileInfo
 # Upload a dataset
 ui.input_file("file", "Choose CSV File", accept=[".csv"], multiple=False)
 
-ui.input_text("value", "Missing value symbol", value="NaN")
-
 @reactive.calc
 def parsed_data():
     file: list[FileInfo] | None = input.file()
@@ -18,10 +16,12 @@ def parsed_data():
     return pd.read_csv(file[0]["datapath"])
 
 # Filter to rows of interest
+ui.input_text("value", "Missing value symbol", value="NaN")
+
 @reactive.calc
 def filtered_data():
     df = parsed_data()
-    filtered_df = df[df.map(lambda x: x == input.value()).any(axis=1)]
+    filtered_df = df[df.map(lambda x: str(x) == input.value()).any(axis=1)]
     return filtered_df
 
 # Display data in editable table
@@ -29,7 +29,7 @@ def filtered_data():
 def data():
     return render.DataGrid(filtered_data(), editable=True)
 
-# Add logic
+# Add custom edit behavior
 @data.set_patch_fn
 def upgrade_patch(*, patch,):
     orig_data = data.data()
@@ -45,7 +45,6 @@ def upgrade_patch(*, patch,):
             type="error",
         )
         return orig_value
-
 
 # Download the finished data
 @render.download(label="Download", filename="updated-data.csv")
