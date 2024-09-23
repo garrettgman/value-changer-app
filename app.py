@@ -6,6 +6,8 @@ from shiny.express import input, render, ui
 from shiny.types import FileInfo
 
 # Upload a dataset
+ui.page_opts(title = "Upload a Table and Supply Missing Values")
+ui.help_text(ui.markdown("Consider using this [example file](sales.csv) to try the app below."))
 ui.input_file("file", "Choose CSV File", accept=[".csv"], multiple=False)
 
 @reactive.calc
